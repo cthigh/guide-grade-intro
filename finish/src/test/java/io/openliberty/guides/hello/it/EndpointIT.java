@@ -22,7 +22,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 public class EndpointIT {
     private static String URL;
 
- 
+
     @BeforeClass
     public static void init() {
 
@@ -31,7 +31,7 @@ public class EndpointIT {
         String war = System.getProperty("war.name");
         URL = "http://localhost:" + port + "/" + war + "/" + "servlet";
         // end::URL[]
-        
+
     }
 
     @Test
@@ -47,7 +47,7 @@ public class EndpointIT {
 
             String response = method.getResponseBodyAsString(1000);
 
-            assertTrue("Unexpected response body", response.contains("Hello! How are you today?"));
+            assertTrue("Unexpected response body", response.contains("Hello! Is Gradle working for you?"));
         } finally {
             method.releaseConnection();
         }

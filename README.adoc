@@ -6,34 +6,43 @@
 // Contributors:
 //     IBM Corporation
 //
-:projectid: maven-intro
+:projectid: gradle-intro
 :page-layout: guide
-:page-duration: 15 minutes
-:page-description: Learn how to build and test a simple web application using Maven and Open Liberty
-:page-tags: ['Maven', 'Getting Started']
+:page-duration: 30 minutes
+:page-description: Learn how to build and test a simple web application using Gradle and Open Liberty
+:page-tags: ['Gradle', 'Getting Started']
 :page-permalink: /guides/{projectid}
 :common-includes: https://raw.githubusercontent.com/OpenLiberty/guides-common/master
-= Building a web application with Maven
+= Building a web application with Gradle
 
-Learn how to build and test a simple web application using Maven and Open Liberty.
+Learn how to build and test a simple web application using Gradle and Open Liberty.
 
 == What you'll learn
 
-You will learn how to configure a simple web servlet application using Maven and the Liberty Maven plugin. When you compile and build the application code, Maven downloads and installs Open Liberty. If you run the application, Maven creates an Open Liberty server and runs the application on it. The application displays a simple web page with a link that, when clicked, calls the servlet to return a simple response of `Hello! How are you today?`.
+You will learn how to build and test a simple web servlet application using Gradle.
+The `war` plugin compiles and builds the application code.
+The https://github.com/WASdev/ci.gradle/blob/master/README.md[`liberty` Gradle plugin] installs the Open Liberty runtime, creates a server, and installs the application to run and test.
+The application displays a simple web page with a link that, when clicked, calls the servlet to return a simple response of `Hello! Is Gradle working for you?`.
 
-One benefit of using Maven is that, once you have defined the details of the project and any dependencies it has, Maven automatically handles downloading and installing any and all of the dependencies.
+One benefit of using a build tool such as Gradle is that, once you have defined the details of the project and any dependencies it has, Gradle automatically downloads and installs the dependencies.
 
-Another benefit of using Maven is that it can run automated tests on the application after building it. You could, of course, test your application manually by starting a server and pointing a web browser at the application URL. Automated tests are a much better approach though because Maven can easily re-run the same tests each time it builds the application. If the tests don't pass after you've made a change to the application, the build fails so you know that you need to fix your code.
+Another benefit of using Gradle is that it can run automated tests on the application in a repeatable fashion.
+You could, of course, test your application manually by starting a server and pointing a web browser at the application URL.
+Automated tests are a much better approach because you can easily re-run the same tests each time the application is built.
+If the tests don't pass after you've made a change to the application, the build fails, and you know you introduced a regression that requires a fix to your code.
 
-You will create a Maven build definition file (`pom.xml`) for the web application project and use it to build the web application. You will then create a simple, automated test and configure Maven to run it after building the application.
+Using this guide, you will create a Gradle build definition file (`build.gradle`) for the web application project and use it to build the application.
+You will then create a simple, automated test and configure Gradle to run it after building the application.
 
 include::{common-includes}/gitclone.adoc[]
 
-== Creating a simple application
+== Creating the application
 
-The simple web application that you will build using Maven and Open Liberty is provided for you in the `start` directory so that you can focus on learning about Maven. The application uses the standard Maven directory structure. Using the standard directory structure saves you from customizing the `pom.xml` file later. 
+The web application that you will build using Gradle and Open Liberty is provided for you in the `start` directory so that you can focus on learning about Gradle.
+The application uses the standard Gradle directory structure.
+Using the standard directory structure saves you from customizing the `build.gradle` file later.
 
-All the application source code, including the Open Liberty server configuration (`server.xml`), is in the `src/main/liberty/config` directory:
+All the application source code, including the Open Liberty server configuration (`server.xml`), is in the `src` directory:
 
 [source, role="no_copy"]
 ----
@@ -41,110 +50,167 @@ All the application source code, including the Open Liberty server configuration
         └── main
            └── java
            └── resources
-           └── webapp
            └── liberty
                   └── config
+           └── webapp
 ----
 
-== Installing Maven
+== Installing Gradle
 
-Now you're ready to install Maven (if you haven't already). https://maven.apache.org/download.cgi[Download the binary zip or tar.gz file] and then follow the https://maven.apache.org/install.html[installation instructions for your operating system] to extract the ZIP file and add the `bin` directory (which contains the `mvn` command) to the `PATH` on your computer.
+Now you're ready to install Gradle if you don't already have version 3 or higher.
+https://gradle.org/install/[The Gradle installation page] gives you alternatives for installing Gradle based on your operating system.
 
-Test that Maven is installed by running the following command in a terminal:
+Test that Gradle is installed by running the following command in a terminal:
 
 [source, role="no_copy"]
 ----
-mvn -v
+gradle -v
 ----
 
-If Maven is installed properly, you should see information about the Maven installation similar to this:
+If Gradle is installed properly, you should see information about the Gradle installation similar to this:
 
 [source, role="no_copy"]
 ----
-Apache Maven 3.5.0 (ff8f5e7444045639af65f6095c62210b5713f426; 2017-04-03T20:39:06+01:00)
-Maven home: /Applications/Maven/apache-maven-3.5.0
-Java version: 1.8.0_131, vendor: Oracle Corporation
-Java home: /Library/Java/JavaVirtualMachines/jdk1.8.0_131.jdk/Contents/Home/jre
-Default locale: en_GB, platform encoding: UTF-8
-OS name: "mac os x", version: "10.12.6", arch: "x86_64", family: "mac"
+------------------------------------------------------------
+Gradle 4.1
+------------------------------------------------------------
+
+Build time:   2017-08-07 14:38:48 UTC
+Revision:     941559e020f6c357ebb08d5c67acdb858a3defc2
+
+Groovy:       2.4.11
+Ant:          Apache Ant(TM) version 1.9.6 compiled on June 29 2015
+JVM:          1.8.0_144 (Oracle Corporation 25.144-b01)
+OS:           Mac OS X 10.12.6 x86_64
 ----
 
+You can also view the default tasks available by running the following command:
 
-== Creating the project POM file
+[source, role="no_copy"]
+----
+gradle tasks
+----
 
-Before you can build the project, you define the Maven Project Object Model (POM) file, the `pom.xml`. Because the POM can look a bit daunting in full, create it a section at a time.
+== Configure your project
 
-Create the `pom.xml` file in the current directory (at the same level as the `src` directory):
+The project configuration is defined in the Gradle settings and build files.
+We will go through creating these one section at a time.
+
+First, create a `settings.gradle` file in the current directory where you cloned the project (at the same level as the `README.adoc` file):
+Add the line to name the project `GradleSample`.
+
+[source]
+----
+include::finish/settings.gradle[]
+----
+
+This isn't really required for a single-module Gradle project but without this definition, the project name will default to the name of the folder in which it is contained (`guide-gradle-intro`).
+
+Create a `build.gradle` file in the current directory where you cloned the project (at the same level as the `settings.gradle` and the `README.adoc` files):
+
+Let's go through the parts of the `build.gradle` file so that you understand each part.
+
+* **Plugins**: The plugins required to build the project.
+* **BuildScript**: Where to find plugins for download.
+* **Repositories**: Where to find dependencies for download.
+* **Dependencies**: Java dependencies that are required for compiling, testing, and running the application are included here. You can also define your Liberty runtime dependency in this section.
+* **Liberty**: Configuration for the Liberty plugin.
+
+
+We will build the file piece by piece.
+The first information added to the `build.gradle` file defines the https://docs.gradle.org/current/userguide/war_plugin.html[`war`] and https://github.com/WASdev/ci.gradle/blob/master/README.md[`liberty`] plugins we want to use.
+The `war` plugin contains all the tasks to compile Java files, build the WAR file structure, and assemble the archive.
+The `liberty` plugin contains the tasks used to install the Liberty runtime and create and manage servers.
+The `group`, `version`, and `description` define this project.
+The compatibility and encoding settings are for Java.
+
+[source,groovy]
+----
+include::finish/build.gradle[tag=opening]
+----
+
+The `buildscript` section defines where to find the plugins you are using in the build.
+We are using version 2.1 of the `liberty` plugin which is available from the Maven Central Repository.
+
+TODO update to match published 2.1 plugin. <<<<<<<<<<<<
+
+[source,groovy]
+----
+include::finish/build.gradle[tag=buildscript]
+----
+
+The `repositories` section defines where to find the dependencies that you are using in the build.
+For this build, everything we need is in Maven Central.
+
+[source,groovy]
+----
+include::finish/build.gradle[tag=repositories]
+----
+
+The `dependencies` section defines what is needed to compile the code and tests as well as run the application.
+`providedCompile` dependencies are APIs that are needed to compile the application but do not need to be packaged with the application because Liberty provides the implementation at runtime.
+For example, the `HelloServlet.java` class depends on `javax.servlet-api` to compile, but since Liberty provides that API, it does not need to be packaged with your application.
+`testCompile` dependencies are needed to compile and run tests.
+
+The `liberty` plugin provides the `libertyRuntime` dependency definition to specify the version of the Liberty runtime you want to use.
+This project uses Open Liberty 17.0.0.2 or later.
+At the time of writing for this guide, version 17.0.0.3 is used.
+
+Other versions of the https://search.maven.org/#search%7Cga%7C1%7Ccom.ibm.websphere.appserver.runtime[WebSphere Liberty runtime] are also available in Maven Central.
+
+[source,groovy]
+----
+include::finish/build.gradle[tag=dependencies]
+----
+
+The `ext` section shows the Gradle extra properties extension that allows you to add properties to a Gradle project.
+If you use a value more than once in your build file, you can simplify updates by defining it as a variable here and referring to the variable later in the build file.
+We define variables for the application name, ports, and the context-root.
+
+[source,groovy]
+----
+include::finish/build.gradle[tag=ext]
+----
+
+The next section provides configuration for the `liberty` plugin.
+In the `liberty` extension, we configure the Liberty server including:
+
+* **name**: The server name.
+* **configFile**: The server configuration file.
+* **bootstrapProperties**: Bootstrap properties that are written to the server's `bootstrap.properties` file.
+* **packageLiberty**: Specifies to only package the `usr` directory in the `build/GradleSample.zip` file.
 
 [source,xml,indent=0]
 ----
-include::finish/pom.xml[tags=whole;!*]
+include::finish/build.gradle[tag=liberty]
 ----
 
-The `pom.xml` file starts with a root `<project />` element and `<modelversion />`, which is always set to `4.0.0`. The `<parent />` section of the POM specifies that Maven will use the https://github.com/WASdev/ci.maven/blob/master/liberty-maven-app-parent/pom.xml[Liberty Maven parent POM] to build the project. This is the minimum you technically need for the POM to be valid. But it won't do much with this project unless you give it a bit more information about your application.
+So what's not configured? By default, when the war plugin is applied, the default `war` is installed to the `apps` folder.
+Omitting this definition is the same as including the following:
 
-Now build up the rest of the `pom.xml` file, a section at a time in the space between the `</parent>` and `</project>` tags. Unless specified otherwise, add each of the sections of XML code beneath the previous one. The `</project>` tag must be the last thing in the `pom.xml` file.
-
-A typical POM for a Liberty application contains the following sections:
-
-* **Project coordinates**: The identifiers for this application.
-* **Properties** (`<properties />`): Any properties for the project go here, including compilation details and any values that are referenced during compilation of the Java source code and generating the application.
-* **Dependencies** (`<dependencies />`): Any Java dependencies that are required for compiling, testing, and running the application are listed here.
-* **Build plugins** (`<build />`): Maven is modular and each of its capabilities is provided by a separate plugin. This is where you specify which Maven plugins should be used to build this project and any configuration information needed by those plugins.
-
-Start by adding the project coordinates of the sample application after the closing `</parent>` tag:
-
-[source,xml,indent=0]
+[source,groovy]
 ----
-include::finish/pom.xml[tags=coordinates]
+        apps = [war]
 ----
 
-The project coordinates describe the name and version of the application. The `artifactId` gives a name to the web application project, which is used to name the output files that are generated by the build (e.g. the WAR file) and the Open Liberty server that is created. You'll notice that other fields in the `pom.xml` file use variables that are resolved by the `artifactId` field. This is so that you can update the name of the sample application, including files generated by Maven, in a single place in the `pom.xml` file. The value of the `packaging` field is `war` so that the project output artifact is a WAR file.
+You can also install applications to the `dropins` folder.
 
-Add the properties of the project:
-
-[source,xml,indent=0]
+Also, by default a loose application is installed to your Liberty server.
+This is useful for development because you only need to recompile your code rather than repackaging your WAR file.
+If you want to turn off loose application support, add the following:
+[source,groovy]
 ----
-include::finish/pom.xml[tags=properties]
+        looseApplication = false
 ----
-
-The first four properties in this section just define the encoding (`UTF-8`) and version of Java (`Java 8`) that Maven uses to compile the application source code.
-
-The next four properties provide a single place to specify values that are used in multiple places throughout the application. For example, the `testServerHttpPort` value is used in both the server configuration (`server.xml`) file and will be used in the test class that you will add (`EndpointIT.java`) in the application itself. This means that you can easily change the port number that the server will run on without having to update the application code in multiple places.
-
-The final two properties define the name and type of server package Maven uses to package the application with a Liberty server.
-
-Add details of the dependency that the web application needs in order to compile:
-
-[source,xml,indent=0]
-----
-include::finish/pom.xml[tags=dependencies;!dependencies_test]
-----
-
-The `HelloServlet.java` class depends on `javax.servlet-api` to compile. Maven will download this dependency from the Maven Central repository using the `groupId`, `artifactId`, and `version` details that you provide here. The dependency is set to `provided`, which means that the API is in the server runtime and doesn't need to be packaged by the application.
-
-Configure the Maven plugins that build this project:
-
-[source,xml,indent=0]
-----
-include::finish/pom.xml[tags=build;!build_test;]
-----
-
-The `<build />` section gives details of the two plugins that Maven uses to build this project:
-
-* The Maven plugin for generating a WAR file as one of the output files.
-* The Liberty Maven plugin, which gives details of the name, version, and file type of Open Liberty runtime package which it will download from the public Maven repository.
-
-In the `liberty-maven-plugin` plugin section, the `<serverName />` field defines the name of the Liberty server that Maven creates. The `<bootstrapProperties />` section provides the set of variables that the `server.xml` references. The `<stripVersion />` field removes the version number from the name of the application (by default the version number of the application (`1.0-SNAPSHOT`) is appended to the application name). This means that the application URL remains the same even when the version number changes.
-
-include::{common-includes}/mvnbuild.adoc[]
-
 
 == Testing the web application
 
-One of the benefits of building an application with Maven is that Maven can be configured to run a set of tests. You can write tests for the individual units of code outside of a running application server (unit tests), or you can write them to call the application server directly (integration tests). In this example you will create a simple integration test that checks that the web page opens and that the correct response is returned when the link is clicked.
+One of the benefits of building an application with build system like Gradle is that it can be configured to run a set of automated tests.
+The `war` plugin extends the https://docs.gradle.org/current/userguide/java_plugin.html[Java plugin] which provides test tasks.
+You can write tests for the individual units of code outside of a running application server (unit tests), or you can write them to call the application server directly (integration tests).
+In this example you will create a simple integration test that checks that the web page opens and that the correct response is returned when the link is clicked.
 
-When Maven runs the test, it starts a test server, runs the application, runs the test, and then stops the server.
+We configure the Gradle project to start the server with the application installed before running the test. After running the test, the server is stopped.
 
 Create the test class `src/test/java/io/openliberty/guides/hello/it/EndpointIT.java`:
 
@@ -153,18 +219,21 @@ Create the test class `src/test/java/io/openliberty/guides/hello/it/EndpointIT.j
 include::finish/src/test/java/io/openliberty/guides/hello/it/EndpointIT.java[tags=**;!comment]
 ----
 
-The test class name ends in `IT` to indicate that it contains an integration test. (Test classes with a name that ends in TEST are unit test classes.)
+The test class name ends in `IT` to indicate that it contains an integration test.
+The integration tests are put in the `it` folder by convention.
 
-Configure Maven to run the integration test using the `maven-failsafe-plugin` by adding another `<plugin />` section just before the closing `</plugins>` tag:
+Configure the Gradle build file to run the integration tests in the `\*/it/**` folder.
 
 [source,xml,indent=0]
 ----
-include::finish/pom.xml[tags=build_test]
+include::finish/build.gradle[tags=tests]
 ----
 
-The `<systemPropertyVariables />` section defines some variables that the test class uses. The test code needs to know where to find the application that it is testing. While the port number and context root information can be hardcoded in the test class, it is better to specify it in a single place like the Maven `pom.xml` file because this information is also used by other files in the project. The `<systemPropertyVariables />` section passes these details to the Java test program as a series of system properties, resolving the `liberty.text.port` and `war.name` variables.
+The `systemProperties` configuration defines some variables needed by the the test class.
+While the port number and context-root information can be hardcoded in the test class, it is better to specify it in a single place like the Gradle `build.gradle` file in case they need to change.
+The `systemProperties` section passes these details to the Java test program as a series of system properties, resolving the `liberty.text.port` and `war.name` variables.
 
-The following lines in the `Endpoint.java` test class uses these system variables to build up the URL of the application:
+The following lines in the `EndpointIT.java` test class uses these system variables to build the URL of the application:
 
 [source,xml,indent=0]
 ----
@@ -173,25 +242,23 @@ include::finish/src/test/java/io/openliberty/guides/hello/it/EndpointIT.java[tag
 
 In the test class, after defining how to build the application URL, the `@Test` annotation indicates the start of the test method.
 
-In the `try` block of the test method, an HTTP `GET` request to the URL of the application returns a status code. If the response to the request includes the string `Hello! How are you today?`, the test passes. If that string is not in the response, the test fails.  The HTTP client then disconnects from the application.
+In the `try` block of the test method, an HTTP `GET` request to the URL of the application returns a status code.
+If the response to the request includes the string `Hello! Is Gradle working for you?`, the test passes.
+If that string is not in the response, the test fails.
+The HTTP client then disconnects from the application.
 
 [source,xml,indent=0]
 ----
 include::finish/src/test/java/io/openliberty/guides/hello/it/EndpointIT.java[tags=clicklink]
 ----
 
-In the `import` statements of this test class, you'll notice that the test has some new dependencies. Before the test can be compiled by Maven, you need to update the `pom.xml` to include these dependencies.
+In the `import` statements of this test class, you'll notice that the test has some new dependencies.
+Earlier we added some `testCompile` dependencies.
+The Apache `commons-httpclient` and `junit` dependencies are needed to compile and run the integration test `EndpointIT` class.
 
-Add the following two `<dependency />` elements after the existing dependency in the `<dependencies />` section of the `pom.xml`:
+The scope for each of the dependencies is set to `testCompile` because the libraries are needed only during the Gradle test phase and do not needed to be packaged with the application.
 
-[source,xml,indent=0]
-----
-include::finish/pom.xml[tags=dependencies_test]
-----
-
-The Apache `commons-httpclient` and `junit` dependencies are needed to compile and run the integration test `EndpointIT` class. The scope for each of the dependencies is set to `test` because the libraries are needed only during the Maven build and do not needed to be packaged with the application.
-
-Now, during the Maven build, Maven creates the WAR file that contains the web application and then runs any integration test classes (classes with names that end in `IT`) that it finds.
+Now, during the build, Gradle creates the WAR file that contains the web application and then runs any integration test classes in the `it` folder.
 
 The directory structure of the project should now look like this:
 
@@ -208,36 +275,24 @@ The directory structure of the project should now look like this:
             └── java
 ----
 
-You can now run the command `mvn install` to rebuild the application, including the test you've added, run the test, and see that the test passes. The Maven build takes a little longer than before the test existed, but expect to see the following information in the output:
+You can now run the command `gradle build -i` to build the application and display some information., including the test you've added, run the test, and see that the test passes.
+The build takes a little longer than before the test existed, but expect to see the browser opened with the test summary displayed.
 
-[source, role="no_copy"]
-----
--------------------------------------------------------
- T E S T S
--------------------------------------------------------
-Running io.openliberty.guides.hello.it.EndpointIT
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.255 sec - in io.openliberty.guides.hello.it.EndpointIT
+To see whether the test detects a failure, change the response string in the servlet `src/main/java/io/openliberty/guides/hello/HelloServlet.java` so that it doesn't match the string that the test is looking for.
+Then re-run the Gradle integration tests with a `gradle integrationTest -i` command and check that the test fails.
 
-Results :
-
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
-----
-
-To see whether the test detects a failure, change the response string in the servlet `src/main/java/io/openliberty/guides/hello/HelloServlet.java` so that it doesn't match the string that the test is looking for. Then re-run the Maven build and check that the test fails.
-
-The complete `pom.xml` should now look like this:
+The complete `build.gradle` file should now look like this:
 
 [source,xml,indent=0]
 ----
-include::finish/pom.xml[tags=whole]
+include::finish/build.gradle[tags=whole]
 ----
 
 
 == Great work! You're done!
 
-You built and tested a web application project with an Open Liberty server using Maven.
+You built and tested a web application project with an Open Liberty server using Gradle.
 
-You can quickly create this project structure by using the https://liberty-app-accelerator.wasdev.developer.ibm.com/start/[Liberty App Accelerator] accelerator or the Maven https://github.com/WASdev/ci.maven#liberty-archetype-webapp[liberty-archetype-webapp] archetype.
-
+You can quickly create this project structure by using the https://liberty-app-accelerator.wasdev.developer.ibm.com/start/[Liberty App Accelerator] and choose to create a Gradle project.
 
 include::{common-includes}/finish.adoc[]
