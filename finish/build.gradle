@@ -20,11 +20,11 @@ buildscript {
         mavenCentral()
         maven {
             name = 'Sonatype Nexus Snapshots'
-            url = 'https://oss.sonatype.org/content/repositories/snapshots/'
+            url = 'https://oss.sonatype.org/content/repositories/netwasdev-1094'
         }
     }
     dependencies {
-        classpath 'net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.0.2-SNAPSHOT'
+        classpath 'net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.1'
     }
 }
 // end::buildscript[]
@@ -110,7 +110,7 @@ task openBrowser {
 task openTestReport {
     description = 'Open browser to the test report'
     doLast {
-        java.awt.Desktop.desktop.browse "file://$buildDir/finish/build/reports/it/index.html".toURI()
+        java.awt.Desktop.desktop.browse "file://$buildDir/reports/it/index.html".toURI()
     }
 }
 // end::open_test_report[]
