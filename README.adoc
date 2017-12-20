@@ -119,8 +119,8 @@ Let's go through the parts of the `build.gradle` file so that you understand eac
 
 
 We will build the `build.gradle` file piece by piece.
-The first information added to the `build.gradle` file defines the https://docs.gradle.org/current/userguide/war_plugin.html[`war`] and https://github.com/WASdev/ci.gradle/blob/master/README.md[`liberty`] plug-ins that you want to use.
-The `war` plug-in contains all the tasks to compile Java files, build the WAR file structure, and assemble the archive.
+The first information added to the `build.gradle` file defines the https://docs.gradle.org/current/userguide/war_plugin.html[`.war`] and https://github.com/WASdev/ci.gradle/blob/master/README.md[`liberty`] plug-ins that you want to use.
+The `.war` plug-in contains all the tasks to compile Java files, build the WAR file structure, and assemble the archive.
 The `liberty` plug-in contains the tasks used to install the Liberty runtime and create and manage servers.
 The `group`, `version`, and `description` define this project.
 The compatibility and encoding settings are for Java.
@@ -184,7 +184,7 @@ In the `liberty` extension, we configure the Liberty server including:
 include::finish/build.gradle[tag=liberty]
 ----
 
-So what's not configured? By default, when the `liberty` and the `.war` plug-ins are applied, the default `.war` is installed to the `apps` folder.
+So what's not configured? By default, when the `liberty` and the `.war` plug-ins are applied, the default WAR file is installed to the `apps` folder.
 Omitting this definition is the same as including the following line:
 
 [source,groovy]
@@ -196,7 +196,7 @@ You can also install applications to the `dropins` folder.
 
 Also, by default, a https://www.ibm.com/support/knowledgecenter/en/SSEQTP_liberty/com.ibm.websphere.wlp.doc/ae/rwlp_loose_applications.html[loose application] is installed to your Liberty server.
 Instead of installing a WAR archive, an XML file (`GradleSample.war.xml`) is installed that describes the location of the application classes, resources, and libraries.
-This is useful for development because you only need to recompile your code, rather than repackaging your `.war` file to see application updates live on the server.
+This is useful for development because you only need to recompile your code, rather than repackaging your WAR file to see application updates live on the server.
 If you want to turn off loose application support, add the following line:
 [source,groovy]
 ----
