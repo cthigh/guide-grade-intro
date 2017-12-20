@@ -185,7 +185,7 @@ include::finish/build.gradle[tag=liberty]
 ----
 
 So what's not configured? By default, when the `liberty` and the `.war` plugins are applied, the default `.war` is installed to the `apps` folder.
-Omitting this definition is the same as including the following:
+Omitting this definition is the same as including the following line:
 
 [source,groovy]
 ----
