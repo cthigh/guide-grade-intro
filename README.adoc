@@ -20,8 +20,8 @@ Learn how to build and test a simple web application using Gradle and Open Liber
 == What you'll learn
 
 You will learn how to build and test a simple web servlet application using Gradle.
-The `.war` plugin compiles and builds the application code.
-The https://github.com/WASdev/ci.gradle/blob/master/README.md[`liberty` Gradle plugin] installs the Open Liberty runtime, creates a server, and installs the application to run and test.
+The `.war` plug-in compiles and builds the application code.
+The https://github.com/WASdev/ci.gradle/blob/master/README.md[`liberty` Gradle plug-in] installs the Open Liberty runtime, creates a server, and installs the application to run and test.
 The application displays a simple web page with a link. When you click that link, the application calls the servlet to return a simple response of `Hello! Is Gradle working for you?`.
 
 One benefit of using a build tool like Gradle is that after you define the details of the project and any dependencies it has, Gradle automatically downloads and installs the dependencies.
@@ -111,15 +111,15 @@ Create a `build.gradle` file in the current directory where you cloned the proje
 
 Let's go through the parts of the `build.gradle` file so that you understand each part.
 
-* **Plugins**: The plugins required to build the project.
-* **BuildScript**: Where to find plugins for download.
+* **Plug-ins**: The plug-ins required to build the project.
+* **BuildScript**: Where to find plug-ins for download.
 * **Repositories**: Where to find dependencies for download.
 * **Dependencies**: Java dependencies that are required for compiling, testing, and running the application are included here. You can also define your Liberty runtime dependency in this section.
-* **Liberty**: Configuration for the Liberty plugin.
+* **Liberty**: Configuration for the Liberty plug-in.
 
 
 We will build the `build.gradle` file piece by piece.
-The first information added to the `build.gradle` file defines the https://docs.gradle.org/current/userguide/war_plugin.html[`war`] and https://github.com/WASdev/ci.gradle/blob/master/README.md[`liberty`] plugins that you want to use.
+The first information added to the `build.gradle` file defines the https://docs.gradle.org/current/userguide/war_plugin.html[`war`] and https://github.com/WASdev/ci.gradle/blob/master/README.md[`liberty`] plug-ins that you want to use.
 The `war` plug-in contains all the tasks to compile Java files, build the WAR file structure, and assemble the archive.
 The `liberty` plug-in contains the tasks used to install the Liberty runtime and create and manage servers.
 The `group`, `version`, and `description` define this project.
@@ -184,7 +184,7 @@ In the `liberty` extension, we configure the Liberty server including:
 include::finish/build.gradle[tag=liberty]
 ----
 
-So what's not configured? By default, when the `liberty` and the `.war` plugins are applied, the default `.war` is installed to the `apps` folder.
+So what's not configured? By default, when the `liberty` and the `.war` plug-ins are applied, the default `.war` is installed to the `apps` folder.
 Omitting this definition is the same as including the following line:
 
 [source,groovy]
@@ -206,7 +206,7 @@ If you want to turn off loose application support, add the following line:
 == Testing the web application
 
 One of the benefits of building an application with a build system like Gradle is that it can be configured to run a set of automated tests.
-The `war` plugin extends the https://docs.gradle.org/current/userguide/java_plugin.html[Java plugin], which provides test tasks.
+The `war` plug-in extends the https://docs.gradle.org/current/userguide/java_plugin.html[Java plug-in], which provides test tasks.
 You can write tests for the individual units of code outside of a running application server (unit tests), or you can write them to call the application running on the server (integration tests).
 In this example, you will create a simple integration test that checks that the web page opens and that the correct response is returned when the link is clicked.
 
@@ -256,7 +256,7 @@ In the `import` statements of this test class, you'll notice that the test has s
 Earlier we added some `testCompile` dependencies.
 The Apache `commons-httpclient` and `junit` dependencies are needed to compile and run the integration test `EndpointIT` class.
 
-The scope for each of the dependencies is set to `testCompile` because the libraries are needed only during the Gradle test phase and do not needed to be packaged with the application.
+The scope for each of the dependencies is set to `testCompile` because the libraries are needed only during the Gradle test phase and do not need to be packaged with the application.
 
 Now, during the build, Gradle installs the application and then runs any integration test classes in the `it` folder.
 
