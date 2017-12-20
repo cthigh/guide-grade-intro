@@ -28,7 +28,7 @@ One benefit of using a build tool like Gradle is that after you define the detai
 
 Another benefit of using Gradle is that it can run repeatable, automated tests on the application.
 You could, of course, test your application manually by starting a server and pointing a web browser at the application URL.
-Automated tests are a much better approach because you can easily re-run the same tests each time the application is built.
+Automated tests are a much better approach because you can easily rerun the same tests each time the application is built.
 If the tests don't pass after you've made a change to the application, the build fails, and you know that you introduced a regression that requires a fix to your code.
 
 Using this guide, you will create a Gradle build definition file (`build.gradle`) for the web application project, and use it to build the application.
@@ -68,7 +68,7 @@ Test that Gradle is installed by running the following command in a command line
 gradle -v
 ----
 
-If Gradle is installed properly, you should see information about the Gradle installation similar to this:
+If Gradle is installed properly, you should see information about the Gradle installation similar to this line:
 
 [source, role="no_copy"]
 ----
@@ -80,7 +80,7 @@ Build time:   2017-08-07 14:38:48 UTC
 Revision:     941559e020f6c357ebb08d5c67acdb858a3defc2
 
 Groovy:       2.4.11
-Ant:          Apache Ant(TM) version 1.9.6 compiled on June 29 2015
+Ant:          Apache Ant(TM) Version 1.9.6 compiled on June 29 2015
 JVM:          1.8.0_144 (Oracle Corporation 25.144-b01)
 OS:           Mac OS X 10.12.6 x86_64
 ----
@@ -97,7 +97,7 @@ gradle tasks
 The project configuration is defined in the Gradle settings and build files.
 You will create these project configurations one section at a time.
 
-First, create a `settings.gradle` file in the current directory where you cloned the project (at the same level as the `README.adoc` file):
+First, create a `settings.gradle` file in the current directory, where you cloned the project (at the same level as the `README.adoc` file):
 Add the line to name the project `GradleSample`.
 
 [source]
@@ -105,7 +105,7 @@ Add the line to name the project `GradleSample`.
 include::finish/settings.gradle[]
 ----
 
-This `settings.gradle` file isn't required for a single-module Gradle project. However, without this definition, the project name will default to the name of the folder in which it is contained (`guide-gradle-intro`).
+This `settings.gradle` file isn't required for a single-module Gradle project. Without this definition, by default, the project name will be  the name of the folder in which it is contained (`guide-gradle-intro`).
 
 Create a `build.gradle` file in the current directory where you cloned the project (at the same level as the `settings.gradle` and the `README.adoc` files):
 
@@ -118,7 +118,7 @@ Let's go through the parts of the `build.gradle` file so that you understand eac
 * **Liberty**: Configuration for the Liberty plug-in.
 
 
-We will build the `build.gradle` file piece by piece.
+You will build the `build.gradle` file piece by piece.
 The first information added to the `build.gradle` file defines the https://docs.gradle.org/current/userguide/war_plugin.html[`.war`] and https://github.com/WASdev/ci.gradle/blob/master/README.md[`liberty`] plug-ins that you want to use.
 The `.war` plug-in contains all the tasks to compile Java files, build the WAR file structure, and assemble the archive.
 The `liberty` plug-in contains the tasks used to install the Liberty runtime and create and manage servers.
@@ -172,7 +172,7 @@ include::finish/build.gradle[tag=ext]
 ----
 
 The next section provides configuration for the `liberty` plug-in.
-In the `liberty` extension, we configure the Liberty server including:
+In the `liberty` extension, we configure the Liberty server, which includes the following settings:
 
 * **name**: The server name.
 * **configFile**: The server configuration file.
@@ -207,7 +207,7 @@ If you want to turn off loose application support, add the following line:
 
 One of the benefits of building an application with a build system like Gradle is that it can be configured to run a set of automated tests.
 The `war` plug-in extends the https://docs.gradle.org/current/userguide/java_plugin.html[Java plug-in], which provides test tasks.
-You can write tests for the individual units of code outside of a running application server (unit tests), or you can write them to call the application running on the server (integration tests).
+You can write tests for the individual units of code outside of a running application server (unit tests), or you can write them to call the application that runs on the server (integration tests).
 In this example, you will create a simple integration test that checks that the web page opens and that the correct response is returned when the link is clicked.
 
 We configured the Gradle project to start the server with the application installed before running the test. After running the test, the server is stopped.
@@ -229,8 +229,8 @@ Configure the Gradle build file to run the integration tests in the `\*/it/**` f
 include::finish/build.gradle[tags=tests]
 ----
 
-The `systemProperties` configuration defines some variables needed by the the test class.
-While the port number and context-root information can be hard coded in the test class, it is better to specify it in a single place like the Gradle `build.gradle` file, in case they need to change.
+The `systemProperties` configuration defines some variables needed by the test class.
+While the port number and context-root information can be hardcoded in the test class, it is better to specify it in a single place like the Gradle `build.gradle` file, in case they need to change.
 The `systemProperties` section passes these details to the Java test program as a series of system properties, resolving the `liberty.text.port` and `war.name` variables.
 
 The following lines in the `EndpointIT.java` test class uses these system variables to build the URL of the application:
@@ -260,7 +260,7 @@ The scope for each of the dependencies is set to `testCompile` because the libra
 
 Now, during the build, Gradle installs the application and then runs any integration test classes in the `it` folder.
 
-The directory structure of the project should now look like this:
+The directory structure of the project should now look like this example:
 
 [source, role="no_copy"]
 ----
@@ -281,9 +281,9 @@ The `-i` option provides additional information on the command line.
 The build takes a little longer than before the test existed, but expect to see the browser opened with the test summary displayed.
 
 To see whether the test detects a failure, change the response string in the servlet `src/main/java/io/openliberty/guides/hello/HelloServlet.java` so that it doesn't match the string that the test is looking for.
-Then re-run the Gradle integration tests with a `gradle integrationTest -i` command, and check that the test fails.
+Then rerun the Gradle integration tests with a `gradle integrationTest -i` command, and check that the test fails.
 
-The complete `build.gradle` file should now look like this:
+The complete `build.gradle` file should now look like this example:
 
 [source,xml,indent=0]
 ----
