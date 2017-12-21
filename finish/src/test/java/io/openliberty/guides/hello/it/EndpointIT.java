@@ -22,34 +22,28 @@ import org.apache.commons.httpclient.methods.GetMethod;
 public class EndpointIT {
     private static String URL;
 
-
     @BeforeClass
     public static void init() {
-
         // tag::URL[]
         String port = System.getProperty("liberty.test.port");
         String war = System.getProperty("war.name");
         URL = "http://localhost:" + port + "/" + war + "/" + "servlet";
         // end::URL[]
-
     }
 
     @Test
     public void testServlet() throws Exception {
-        HttpClient client = new HttpClient();
-
-        GetMethod method = new GetMethod(URL);
+        HttpClient httpClient = new HttpClient();
+        GetMethod httpGetMethod = new GetMethod(URL);
         // tag::clicklink[]
         try {
-            int statusCode = client.executeMethod(method);
-
-            assertEquals("HTTP GET failed", HttpStatus.SC_OK, statusCode);
-
-            String response = method.getResponseBodyAsString(1000);
-
+            int actualStatusCode = httpClient.executeMethod(httpGetMethod);
+            int expectedStatusCode = HttpStatus.SC_OK;
+            assertEquals("HTTP GET failed", expectedStatusCode, actualStatusCode);
+            String response = httpGetMethod.getResponseBodyAsString(1000);
             assertTrue("Unexpected response body", response.contains("Hello! Is Gradle working for you?"));
         } finally {
-            method.releaseConnection();
+            httpGetMethod.releaseConnection();
         }
         // end::clicklink[]
     }
