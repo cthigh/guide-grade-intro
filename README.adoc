@@ -287,22 +287,22 @@ The scope for each of the dependencies is set to `testCompile` because the libra
 
 Now, during the build, Gradle installs the application and then runs any integration test classes in the `it` folder.
 
-The directory structure of the project should now look like this example:
+The directory structure of the project in the `start` folder should now look like this example:
 
 [source, role="no_copy"]
 ----
 └── build.gradle
 ├── settings.gradle
-├── src
-│   ├── main
-│   │    ├── java
-│   │    ├── liberty
-│   │    │    └── config
-│   │    └── webapp
-│   │         └── WEB_INF
-│   └── test
-│        └── java
-└── README.adoc
+└── src
+    ├── main
+    │    ├── java
+    │    ├── liberty
+    │    │    └── config
+    │    └── webapp
+    │         └── WEB_INF
+    └── test
+         └── java
+
 ----
 
 == A few more pieces
