@@ -47,17 +47,15 @@ All the application source code, including the Open Liberty server configuration
 
 [source, role="no_copy"]
 ----
-└── start
-    └── src
-        └── main
-            └── java
-            └── liberty
-                └── config
-            └── webapp
-                └── WEB-INF
-----
 
-Copy the `src` folder to the root of the project.
+└── src
+    └── main
+        └── java
+        └── liberty
+            └── config
+        └── webapp
+            └── WEB-INF
+----
 
 == Installing Gradle
 
@@ -109,9 +107,9 @@ Create: `./settings.gradle`
 include::finish/settings.gradle[]
 ----
 
-This `settings.gradle` file isn't required for a single-module Gradle project. Without this definition, by default, the project name will be the name of the folder in which it is contained (`guide-gradle-intro`).
+This `settings.gradle` file isn't required for a single-module Gradle project. Without this definition, by default, the project name is set the name of the folder in which it is contained (`start` for this example).
 
-Create a `build.gradle` file in the current directory where you cloned the project (at the same level as the `settings.gradle` file, the `README.adoc` file, and the src folder.):
+Create a `build.gradle` file in the `start` folder with the `settings.gradle` file and the `src` folder.
 
 Let's go through the parts of the `build.gradle` file so that you understand each part.
 
@@ -168,7 +166,7 @@ include::finish/build.gradle[tag=dependencies]
 ----
 The `dependencies` section defines what is needed to compile and test the code.
 This section also defines how to run the application.
-The `providedCompile` dependencies are APIs that are needed to compile the application, but they do not need to be packaged with the application because Open Liberty provides the implementation at run time.
+The `providedCompile` dependencies are APIs that are needed to compile the application, but they do not need to be packaged with the application because Open Liberty provides their implementation at run time.
 For example, the `HelloServlet.java` class depends on `javax.servlet-api` to compile, but since Open Liberty provides that API, it does not need to be packaged with your application.
 The `testCompile` dependencies are needed to compile and run tests.
 
@@ -216,7 +214,7 @@ You can also install applications to the `dropins` folder.
 
 Also, by default, a https://www.ibm.com/support/knowledgecenter/en/SSEQTP_liberty/com.ibm.websphere.wlp.doc/ae/rwlp_loose_applications.html[loose application] is installed to your Liberty server.
 Instead of installing a WAR archive, an XML file (`GradleSample.war.xml`) is installed that describes the location of the application classes, resources, and libraries.
-This is useful for development because you only need to recompile your code, rather than repackaging your WAR file to see application updates live on the server.
+This is useful for development because you only need to recompile your code, rather than repackaging and redeploy your entire WAR file to see application updates live on the server.
 If you want to turn off loose application support, add the following line:
 [source,groovy]
 ----
@@ -245,7 +243,7 @@ Create the test class `src/test/java/io/openliberty/guides/hello/it/EndpointIT.j
 
 [source,java,indent=0]
 ----
-include::finish/src/test/java/io/openliberty/guides/hello/it/EndpointIT.java[tags=*;!comment]
+include::finish/src/test/java/io/openliberty/guides/hello/it/EndpointIT.java[tags=**;!comment]
 ----
 
 The test class name ends in `it` to indicate that it contains an integration test.
@@ -256,7 +254,7 @@ Add the `test` section to your build file:
 ----
 include::finish/build.gradle[tags=tests]
 ----
-Thia configures Gradle to run the integration tests in the `\*/it/**` folder.
+This configures Gradle to run the integration tests in the `\*/it/**` folder.
 
 The `systemProperties` configuration defines some variables needed by the test class.
 While the port number and context-root information can be hardcoded in the test class, it is better to specify it in a single place like the Gradle `build.gradle` file, in case they need to change.
@@ -264,7 +262,7 @@ The `systemProperties` section passes these details to the Java test program as 
 
 The following lines in the `EndpointIT.java` test class uses these system variables to build the URL of the application:
 
-[source,xml,indent=0]
+[source,java,indent=0]
 ----
 include::finish/src/test/java/io/openliberty/guides/hello/it/EndpointIT.java[tags=URL]
 ----
@@ -276,7 +274,7 @@ If the response to the request includes the string `Hello! Is Gradle working for
 If that string is not in the response, the test fails.
 The HTTP client then disconnects from the application.
 
-[source,xml,indent=0]
+[source,java,indent=0]
 ----
 include::finish/src/test/java/io/openliberty/guides/hello/it/EndpointIT.java[tags=clicklink]
 ----
@@ -343,7 +341,7 @@ The build takes a little longer than before the test existed, but expect to see 
 To see whether the test detects a failure, change the response string in the servlet `src/main/java/io/openliberty/guides/hello/HelloServlet.java` so that it doesn't match the string that the test is looking for.
 Then rerun the Gradle integration tests with a `gradle integrationTest -i` command, and check that the test fails.
 
-The complete `build.gradle` file should now look like this example:
+The complete `build.gradle` file should now look like the following:
 
 [source,xml,indent=0]
 ----
