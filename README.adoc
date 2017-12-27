@@ -101,7 +101,7 @@ You will create these project configurations one section at a time.
 Gradle https://docs.gradle.org/current/dsl/org.gradle.api.initialization.Settings.html[settings] are used to instantiate and configure the project.
 This sample uses the `settings.gradle` to name the project `GradleSample`.
 
-Create: `./settings.gradle`
+Create `./settings.gradle`:
 [source]
 ----
 include::finish/settings.gradle[]

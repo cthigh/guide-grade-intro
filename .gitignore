@@ -1,1 +1,4 @@
-target/
+build/
+.gradle/
+README.html
+.DS_Store
